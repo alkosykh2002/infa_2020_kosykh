@@ -1,21 +1,19 @@
-print('z ujdyjtl')
-
 import pygame
 from pygame.draw import *
+from random import randint
 
 pygame.init()
 
-FPS = 30
+FPS = 6
 screen = pygame.display.set_mode((1200, 720))
 screen.fill((250, 200, 100))
 
 
-def gornychrebet1():
-    x = 0.0
-    y = 400.0
-    Gor = [[0, 0]] * 1200
+# горы на заднем плане
+def gornychrebet1(x=0.0, y=400.0):
+    gor = [[0, 0]] * 1200
     for x in range(0, 1200):
-        Gor[x] = [round(x), round(y)]
+        gor[x] = [round(x), round(y)]
         if x < 161:
             y = 350 - 100 * (x / 100) * (x / 100)
         if (x > 160) and (x < 201):
@@ -42,9 +40,48 @@ def gornychrebet1():
             y = y + 150
 
     print(x, y)
-    polygon(screen, [139, 109, 92], Gor)
+    polygon(screen, [139, 109, 92], gor)
 
 
+# горы в центре экрана
+def gornychrebet2(x=0.0, y=510.0):
+    gor = [[0, 0]] * 1200
+    for x in range(0, 1200):
+        gor[x] = [round(x), round(y)]
+        if x < 151:
+            y = y + 2 * 150 * (x - 80) / 5000
+        if (x > 150) and (x < 201):
+            y = y - 1.5
+        if (x > 200) and (x < 261):
+            y = y + 1
+        if (x > 260) and (x < 301):
+            y = y - 2
+        if (x > 300) and (x < 431):
+            y = y + 0.3
+        if (x > 430) and (x < 481):
+            y = y + 1.5
+        if (x > 480) and (x < 601):
+            y = y - 0.15
+        if (x > 600) and (x < 801):
+            y = y + 2 * (x - 740) / 90
+        if (x > 800) and (x < 901):
+            y = y - 2 * (x - 980) / 250
+        if (x > 900) and (x < 1001):
+            y = y - 0.8
+        if (x > 1000) and (x < 1031):
+            y = y + 2
+        if (x > 1030) and (x < 1101):
+            y = y - 1.2
+        if (x > 1100) and (x < 1151):
+            y = y + 0.8
+        if (x > 1150) and (x < 1198):
+            y = y - 3
+        if x > 1197:
+            y = 510
+    polygon(screen, [109, 79, 62], gor)
+
+
+# ну тут очев, солнце
 def solntse(x, y, r):
     pygame.draw.circle(screen, [255, 255, 200], [x, y], r)
     for i in range(1, 200):
@@ -54,6 +91,17 @@ def solntse(x, y, r):
         screen.blit(corona, (0, 0))
 
 
+# рандомно генерируемые деревья
+def les():
+    polygon(screen, [33, 110, 0], [[0, 510], [0, 390], [1200, 270], [1200, 500]])
+    for i in range(1, 600):
+        X = randint(0, 1200)
+        Y = randint(400 - round(X / 12), 500)
+        pygame.draw.polygon(screen, [randint(20, 40), randint(90, 130), randint(0, 20)],
+                            [[X, Y], [X + 10, Y], [X + 5, Y - randint(20, 30)]])
+
+
+# море, рисуется линиями, чтобы цвет волны менялся от координаты и от времени
 def more(x, y, t):
     volna = [[0, 0]] * 130
     for i in range(0, 110):
@@ -64,6 +112,7 @@ def more(x, y, t):
                           0, volna, 3)
 
 
+# кораблик, r - это размер, х и у координаты левой верхней точки
 def korablik(x, y, r):
     pygame.draw.polygon(screen, (184, 16, 0),
                         [[x, y + 7 * r / 10], [x + 3 * r / 10, y + r], [x + r, y + r], [x + r, y + 8 * r / 10]])
@@ -74,24 +123,48 @@ def korablik(x, y, r):
     pygame.draw.polygon(screen, [255, 255, 255],
                         [[x + 0.6 * r, y + 0.76 * r], [x + 0.6 * r, y + 0.2 * r], [x + r, y + 0.8 * r],
                          [x + r, y + 0.7 * r]])
-    pygame.draw.line(screen, [184, 16, 0], [x + 0.6 * r, y], [x + 0.6 * r, y + 0.8 * r], round(r/20))
+    pygame.draw.line(screen, [184, 16, 0], [x + 0.6 * r, y], [x + 0.6 * r, y + 0.8 * r], round(r / 20))
 
 
-# main programm
+# рисуем птицу
+def ptitsa(x, y, r, t):
+    pygame.draw.polygon(screen, [50, 30, 0], [[x, y + 0.7 * r], [x + 0.5 * r, y + 0.5 * r], [x + 0.9 * r, y + 0.6 * r],
+                                              [x + 0.9 * r, y + 0.5 * r], [x + r, y + 0.6 * r],
+                                              [x + 1.5 * r, y + 0.4 * r], [x + 2 * r, y + 0.4 * r],
+                                              [x + 1.5 * r, y + 0.5 * r], [x + 1.1 * r, y + 0.7 * r],
+                                              [x + 1.2 * r, y + 0.8 * r], [x + r, y + 0.8 * r],
+                                              [x + 0.5 * r, y + 0.6 * r]])
+
+
+# птицы поверх всего, поэтому сначала задаём расположение
+k_ptits = 20
+staya = [0] * k_ptits
+for i in range(k_ptits):
+    staya[i] = [0] * 3
+for i in range(k_ptits):
+    staya[i][0] = randint(100, 1100)
+    staya[i][1] = randint(200, 700)
+    staya[i][2] = 10 * randint(2, 5)
+
+# основная программа
 gornychrebet1()
-
+les()
+gornychrebet2()
 solntse(500, 100, 30)
 
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
 
+# анимированная вода, кораблик, птицы
 time = 0
 while not finished:
     clock.tick(FPS)
-    more(0, 400, round(time))
+    more(0, 500, round(time))
     korablik(1000 + round(2 * time), 600, 50)
-    time = time - 0.1
+    for i in range(0, k_ptits - 1):
+        ptitsa(staya[i][0], staya[i][1], staya[i][2], time)
+    time = time - 0.5
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
