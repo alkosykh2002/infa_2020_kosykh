@@ -103,8 +103,11 @@ def les():
     for i in range(1, 400):
         X = randint(0, 1200)
         Y = randint(400 - round(X / 12), 500)
-        pygame.draw.polygon(screen, [randint(20, 40), randint(90, 130), randint(0, 20)],
-                            [[X, Y], [X + 10, Y], [X + 5, Y - randint(20, 30)], [X, Y + 10], [X + 10, Y + 10],
+        pygame.draw.line(screen, [180, 20, 0], [X + 5, Y + 20], [X + 5, Y], 3)
+        pygame.draw.polygon(screen, [randint(20, 40), randint(40, 80), randint(0, 20)],
+                            [[X, Y], [X + 10, Y], [X + 5, Y - randint(20, 30)]])
+        pygame.draw.polygon(screen, [randint(20, 40), randint(40, 80), randint(0, 20)],
+                            [[X, Y + 10], [X + 10, Y + 10],
                              [X + 5, Y + 10 - randint(20, 30)]])
 
 
