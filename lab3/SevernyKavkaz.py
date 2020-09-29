@@ -90,17 +90,16 @@ def gornychrebet3():
 # ну тут очев, солнце
 def solntse(x, y, r):
     pygame.draw.circle(screen, [255, 200, 200], [x, y], r)
-    for i in range(1, 200):
+    for shag in range(1, 200):
         corona = pygame.Surface((1000, 500), pygame.SRCALPHA)
-        pygame.draw.circle(corona, (255, 0, 0, 0), (2 * r, 2 * r), 2 * r)
-        pygame.draw.circle(corona, [255, 150, 0, 200 - i], [x, y], r + 2 * i, 2)
+        pygame.draw.circle(corona, [255, 150, 0, 200 - shag], [x, y], r + 2 * shag, 2)
         screen.blit(corona, (0, 0))
 
 
 # рандомно генерируемые деревья
 def les():
     polygon(screen, [33, 110, 0], [[0, 510], [0, 390], [1200, 270], [1200, 500]])
-    for i in range(1, 400):
+    for derevo in range(1, 400):
         X = randint(0, 1200)
         Y = randint(400 - round(X / 12), 500)
         pygame.draw.line(screen, [180, 20, 0], [X + 5, Y + 20], [X + 5, Y], 3)
@@ -160,7 +159,7 @@ for i in range(k_ptits):
     staya[i][1] = randint(500, 700)
     staya[i][2] = randint(-50, 50)
 
-# основная программа
+# это всё фон, поэтому нет параметров
 gornychrebet1()
 les()
 gornychrebet2()
@@ -178,6 +177,7 @@ while not finished:
     korablik(1000 + round(2 * time), 600, 90)
     for i in range(0, k_ptits - 1):
         if (staya[i][0] < 0) or (staya[i][0] > 1200):
+            # разворот на 180 градусов
             staya[i][2] *= -1
             staya[i][0] -= 2.1 * staya[i][2]
         staya[i][0] -= round((staya[i][2] + 1) / 10)
