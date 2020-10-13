@@ -4,7 +4,7 @@ from random import randint
 
 pygame.init()
 
-FPS = 6
+FPS = 30
 screen = pygame.display.set_mode((1200, 720))
 screen.fill((250, 200, 100))
 
