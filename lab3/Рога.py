@@ -23,6 +23,7 @@ exp_y1 = 0
 Ecrx = 1000
 Ecry = 700
 FPS = 20
+cursor_pos = 0
 screen = pygame.display.set_mode((Ecrx, Ecry))
 
 pygame.font.SysFont('arial', 36)
@@ -33,6 +34,9 @@ class Hero:
     x = 0
     y = 0
     fi = 0
+    r = 50
+    tsvet_tela = COLORS[0]
+    tsvet_planseta = COLORS[3]
 
     def vverh(self):
         self.y -= 100 / FPS
@@ -46,6 +50,10 @@ class Hero:
     def vpravo(self):
         self.x += 100 / FPS
 
+    def new_coord(self, dx, dy):
+        return [self.x + dx * self.r * numpy.cos(self.fi) + dy * self.r * numpy.sin(self.fi),
+                self.y + dx * self.r * numpy.sin(self.fi) - dy * self.r * numpy.cos(self.fi)]
+
     def risyi(self, cursor):
         if self.y <= cursor[1]:
             self.fi = numpy.arccos((cursor[0] - self.x) / numpy.sqrt(
@@ -53,9 +61,20 @@ class Hero:
         if self.y > cursor[1]:
             self.fi = numpy.pi + numpy.arccos(-(cursor[0] - self.x) / numpy.sqrt(
                 (cursor[0] - self.x) * (cursor[0] - self.x) + (cursor[1] - self.y) * (cursor[1] - self.y)))
-        circle(screen, [0, 0, 255], [int(self.x), int(self.y)], 20)
-        line(screen, [200, 200, 200], [int(self.x), int(self.y)],
-             [int(self.x + 30 * numpy.cos(self.fi)), int(self.y + 40 * numpy.sin(self.fi))], 3)
+        polygon(screen, [255, 255, 150], [self.new_coord(0.3, 0.5), self.new_coord(0.5, 0.4), self.new_coord(0.4, 0.3)])
+        polygon(screen, [255, 255, 150],
+                [self.new_coord(0.3, -0.5), self.new_coord(0.5, -0.4), self.new_coord(0.4, -0.3)])
+        polygon(screen, self.tsvet_tela,
+                [self.new_coord(-0.2, 0.2), self.new_coord(0, 0.6), self.new_coord(0.4, 0.5), self.new_coord(0.3, 0.4),
+                 self.new_coord(0.1, 0.5), self.new_coord(0.2, 0.4), self.new_coord(0.3, 0.1),
+                 self.new_coord(0.3, -0.1), self.new_coord(0.2, -0.4), self.new_coord(0.1, -0.5),
+                 self.new_coord(0.3, -0.4), self.new_coord(0.4, -0.5), self.new_coord(0, -0.6),
+                 self.new_coord(-0.2, -0.2)])
+        polygon(screen, self.tsvet_planseta,
+                [self.new_coord(0.3, 0.2), self.new_coord(0.5, 0.6), self.new_coord(0.7, 0.5),
+                 self.new_coord(0.5, 0.1)])
+        line(screen, self.tsvet_planseta, self.new_coord(0.45, -0.3), self.new_coord(0.45, -0.6), self.r // 20)
+        circle(screen, [255, 255, 150], [int(self.x), int(self.y)], int(0.2 * self.r))
 
     def vystrel(self):
         line(screen, [255, 200, 100], [int(self.x), int(self.y)],
@@ -127,7 +146,8 @@ class SharOdin:
     def check(self, hero, cursor):
         if abs((cursor[1] - hero[1]) * self.parametry[0] + (hero[0] - cursor[0]) * self.parametry[1] - hero[0] * (
                 cursor[1] - hero[1]) + hero[1] * (cursor[0] - hero[0])) / numpy.sqrt(
-                (cursor[1] - hero[1]) * (cursor[1] - hero[1]) + (cursor[0] - hero[0]) * (cursor[0] - hero[0])) < self.parametry[2]:
+            (cursor[1] - hero[1]) * (cursor[1] - hero[1]) + (cursor[0] - hero[0]) * (cursor[0] - hero[0])) < \
+                self.parametry[2]:
             return 1
         else:
             return 0
@@ -166,14 +186,14 @@ while not finished:
         if event.type == pygame.QUIT:
             finished = True
         if event.type == pygame.MOUSEMOTION:
-            cursor_posM = event.pos
+            cursor_pos = event.pos
         if event.type == pygame.MOUSEBUTTONDOWN:
             if (event.button == 1) or (event.button == 3):
-                cursor_posM = event.pos
+                cursor_pos = event.pos
                 player.vystrel()
-                if shar_1.check([player.x, player.y], cursor_posM):
+                if shar_1.check([player.x, player.y], cursor_pos):
                     score += 1
                     shar_1 = SharOdin()
-    player.risyi(cursor_posM)
+    player.risyi(cursor_pos)
     pygame.display.update()
 pygame.quit()
